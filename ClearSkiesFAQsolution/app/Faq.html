@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../img/csa.ico">
+</head>
+<body>
+    <a id="top"></a>
+    <nav class="navbar navbar-default" style="background-color:#5792f2">
+        <div class="container">
+            <div class="navbar-header">
+                <img src="/img/CSA2-1.png" alt="company logo" width="40" height="40" style="float: left; margin: 5px;"/>
+                <a class="navbar-brand" style="color:#fff" href="/">ClearSkies Airlines FAQ's</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" (click)="displayForside()" style="color:#fff">Forside</a></li>
+                <li><a href="#generellespm" (click)="displayGenerelleSpm()" style="color:#fff">Ofte stilte spørsmål</a></li>
+                <li><a href="#kundespm" (click)="displayKundeSpm()" style="color:#fff">Spørsmål fra kunder</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+                <div class="col-md-offset-3 col-md-5" *ngIf="visForsideInfo">
+                    <h1>Info om FAQ's siden vår</h1>
+                    <br />
+                    <strong>Ofte stilte spørsmål</strong>
+                    <p>Dette er spørsmål vi anser å være relevant i forbindelse med billettbestilling.
+                       Under spørsmålslisten kan du selv også sende inn spørsmål til oss, som vi vil besvare forløpende. 
+                       Du vil her bli bedt om å fylle inn epost-adressen din, men dette er kun for at vi skal kunne svare tilbake til deg, og den vil ikke bli vist til andre
+                       kunder.
+                    </p>
+                    <br />
+                    <strong>Spørsmål fra kunder</strong>
+                    <p>Dette er innsendte spørsmål ifra andre kunder. Dette er hovedsaklig en funksjon for Admins/kundeservice, hvor de får en oversikt
+                    over innsendte spørsmål ifra kunder, mailen svaret skal bli sendt tilbake til, og hvorvidt spørsmålet har en besvarelse
+                    knyttet til seg/blitt besvart.
+                    </p>
+                </div>
+        </div>
+    </div>
+
+    
+    <div class="col-md-offset-3 col-md-6" *ngIf="visGenerelleSpm">
+        <div>
+            <h2>Ofte stilte spørsmål</h2>
+            <!--<a href="#sporsmalskjema">Gå til spørsmålsskjema</a> Kan benyttes når det blir mange spørsmål på siden-->
+        </div>
+        <div *ngIf="henterData">
+            <p class="alert-warning" style="text-align:center; padding-top:20px; padding-bottom:20px;">
+                <strong>Henter spørsmål, vennligst vent..</strong>
+            </p>
+        </div>
+        <br />
+        <table class="table table-striped table-bordered table-condensed">
+            <thead style="background-color: #5792f2">
+                <tr>
+                    <th style="color:#fff">Spørsmål</th>
+                    <th style="color:#fff">Svar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let sporsmal of alleGenerelleSpm">
+                    <td>{{sporsmal.sporsmal}}</td>
+                    <td>{{sporsmal.svar}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-offset-3 col-md-6" *ngIf="visSporsmalSkjema" style="padding-bottom: 50px">
+        <div>
+            <a id="sporsmalskjema"></a>
+            <h2>Spørsmålskjema</h2>
+        </div>
+        <br />
+        <form [formGroup]="sporsmalSkjema" (ngSubmit)="regOnSubmit()">
+            <div class="form-group">
+                <label>Epost:</label>
+                <input class="form-control" formControlName="epost" placeholder="Eks. epost@tjeneste.no" />
+                <p class="alert alert-warning" [hidden]="sporsmalSkjema.controls.epost.valid || (sporsmalSkjema.controls.epost.pristine && !submitted)">
+                    Epost-adresse må fylles inn slik at vi kan sende svar tilbake til deg (Eksempel: epost_adresse@tjeneste.no).
+                </p>
+            </div>
+            <div class="form-group">
+                <label>Spørsmål:</label>
+                <textarea class="form-control" formControlName="sporsmal" rows="5" placeholder="Skriv inn et spørsmål..."></textarea>
+                <p class="alert alert-warning" [hidden]="sporsmalSkjema.controls.sporsmal.valid || (sporsmalSkjema.controls.sporsmal.pristine && !submitted)">
+                    Vennligst skriv inn et spørsmål (Du kan bruke bokstavene A-å, og spørsmålet må være mellom 5 og 500 tegn).
+                </p>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success" [disabled]="!sporsmalSkjema.valid">Send spørsmål</button>
+            </div>
+        </form>
+        <!--<a href="#top">Tilbake til toppen</a> Kan benyttes når det blir mange spørsmål på siden-->
+    </div>
+
+    <div class="col-md-offset-3 col-md-6" *ngIf="visKundeSpm" style="padding-bottom: 50px">
+        <div>
+            <h2>Kundespørsmål</h2>
+        </div>
+        <div *ngIf="henterData">
+            <p class="alert-warning" style="text-align:center; padding-top:20px; padding-bottom:20px;">
+                <strong>Henter spørsmål, vennligst vent..</strong>
+            </p>
+        </div>
+        <br />
+        <table class="table table-striped table-bordered table-condensed">
+            <thead style="background-color: #5792f2">
+                <tr>
+                    <th style="color:#fff">Epost</th>
+                    <th style="color:#fff">Spørsmål</th>
+                    <th style="color:#fff">Svar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let kundeSporsmal of alleKundeSpm">
+                    <td>{{kundeSporsmal.epost}}</td>
+                    <td>{{kundeSporsmal.sporsmal}}</td>
+                    <td><div *ngIf="kundeSporsmal.svar==null"><p style="color:red"><i>- Ikke besvart av kundeservice -</i></p></div>
+                        {{kundeSporsmal.svar}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</body>
+</html>
